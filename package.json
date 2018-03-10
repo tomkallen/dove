@@ -1,7 +1,7 @@
 {
-  "name": "yandexdav",
-  "version": "0.0.1",
-  "description": "",
+  "name": "dove",
+  "version": "0.1.1",
+  "description": "webdav files grabber",
   "main": "index.js",
   "author": "Alex Bykov (spbeat@mail.ru)",
   "license": "MIT",

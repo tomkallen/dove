@@ -1,4 +1,4 @@
-const VERSION = "0.0.2";
+const VERSION = "0.1.1";
 
 const createClient = require('webdav');
 const fs = require('fs');
@@ -17,7 +17,6 @@ const startTime = new Date().toLocaleString();
 
 getConfigOptions();
 
-
 const {url, username, password, timeout, folder, target, port, removeFromCloud} = config;
 const client = createClient(url, username, password);
 
@@ -32,34 +31,33 @@ removeFromCloud
 
 getFiles();
 
-function getFiles() {
-    client.getDirectoryContents(folder).then(r => {
-        if (r.length > 1) {
-            white(`Found new images: ${r.length - 1}`);
-            r.forEach((file, index) => {
-                if (!index) return;
-                client.getFileContents(file.filename)
-                    .then(content => {
-                        green(`Copying file ${file.basename}`);
-                        fileCounter++;
-                        fs.writeFile(target + file.basename, content, error => {
-                            if (error) {
-                                white(error)
-                            } else {
-                                if (removeFromCloud) {
-                                    client.deleteFile(file.filename);
-                                    red(`Deleting file ${file.basename}`);
-                                }
+async function getFiles() {
+    const files = await client.getDirectoryContents(folder);
+    if (files.length < 2) return;
+    const local = fs.readdirSync(target) || [];
+    white(`Images in remote folder: ${files.length - 1}`);
+    await files
+        .filter(f => !local.includes(f.basename))
+        .forEach((file, index) => {
+            if (!index) return; // skip folder at index 0
+            client.getFileContents(file.filename)
+                .then(content => {
+                    green(`Copying file ${file.basename}`);
+                    fileCounter++;
+                    fs.writeFile(target + file.basename, content, error => {
+                        if (error) {
+                            white(error)
+                        } else {
+                            if (removeFromCloud) {
+                                client.deleteFile(file.filename);
+                                red(`Deleting file ${file.basename}`);
                             }
-                        });
-
-                    })
-                    .catch(error => white(error))
-            });
-        }
-        yellow(`Done. Sleeping for ${timeout} seconds`)
-    })
-
+                        }
+                    });
+                })
+                .catch(error => white(error))
+        });
+    yellow(`No more job. Sleeping for ${timeout} seconds`);
 }
 
 app.get("/", (req, res) => res.render(path.join(__dirname, 'status.ejs'), {
