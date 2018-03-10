@@ -32,7 +32,13 @@ removeFromCloud
 getFiles();
 
 async function getFiles() {
-    const files = await client.getDirectoryContents(folder);
+    let files = [];
+    try {
+        files = await client.getDirectoryContents(folder);
+    } catch (e) {
+        red("There's a problem accessing remote. Make sure your 'folder' option in config.yaml is correct");
+        return
+    }
     if (files.length < 2) return;
     const local = fs.readdirSync(target) || [];
     white(`Images in remote folder: ${files.length - 1}`);
