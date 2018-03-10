@@ -5,4 +5,4 @@ folder: Фотокамера
 removeFromCloud: false
 port: 4000
 timeout: 60
-target: "D:/pathtomy/photos/"
+target: D:/pathtomy/photos/

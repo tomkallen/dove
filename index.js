@@ -37,7 +37,7 @@ async function getFiles() {
     const local = fs.readdirSync(target) || [];
     white(`Images in remote folder: ${files.length - 1}`);
     await files
-        .filter(f => !local.includes(f.basename))
+        .filter(f => !local.includes(f.basename)) // ignore file if already downloaded
         .forEach((file, index) => {
             if (!index) return; // skip folder at index 0
             client.getFileContents(file.filename)
@@ -70,6 +70,7 @@ setInterval(getFiles, timeout * 1000);
 
 function getConfigOptions() {
     try {
+        // testconfig.yaml can be used to store your actual login/pass and other settings for development purposes
         config = yaml.safeLoad(fs.readFileSync('./testconfig.yaml', 'utf8'));
     } catch (error) {
         try {
