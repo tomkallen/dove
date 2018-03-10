@@ -39,7 +39,7 @@ async function getFiles() {
         red("There's a problem accessing remote. Make sure your 'folder' option in config.yaml is correct");
         return
     }
-    if (files.length < 2) return;
+    if (files.length < 2) return yellow(`No more job. Sleeping for ${timeout} seconds`);
     const local = fs.readdirSync(target) || [];
     white(`Images in remote folder: ${files.length - 1}`);
     await files
