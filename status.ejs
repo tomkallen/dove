@@ -1,0 +1,35 @@
+<html>
+<style>
+    body {
+        font-family: monospace;
+        color: #666;
+        margin: 0;
+        font-size: 16px;
+    }
+
+    h2 {
+        padding: 2rem 0 0 2rem;
+    }
+
+    p {
+        padding-left: 2rem;
+        margin: 0;
+    }
+
+    span {
+        color: #aaaaff;
+    }
+</style>
+<body>
+
+<h2>DAV is laying low and everything is just fine</h2>
+
+<p>Delivering since <span><%- startTime %></span></p>
+<p>Watching user <span><%- username %></span></p>
+<p>at the url of <span><%- url %></span></p>
+<p>Images will be copied to <span><%- target %></span> from the remote folder <span><%- folder %></span></p>
+<p><span><%- fileCounter %></span> images were processed so far</p>
+<br>
+<p>Version <%- VERSION %></p>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "yandexdav",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "author": "Alex Bykov (spbeat@mail.ru)",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "2.3.2",
+    "ejs": "^2.5.7",
+    "express": "4.16.2",
+    "js-yaml": "3.11.0",
+    "webdav": "1.3.0"
+  }
+}
