@@ -14,13 +14,13 @@ app.set('view engine', 'ejs');
 let config = {};
 let fileCounter = 0;
 let ignoredFiles = "";
-let ignoredCache = [];
+
 const startTime = new Date().toLocaleString();
 
 getConfigOptions();
 getIgnoredFilesList();
 
-const {url, username, password, timeout, folder, target, port, removeFromCloud} = config;
+const {url, username, password, timeout, folder, target, port, removeFromCloud, ignoreDeleted} = config;
 const client = createClient(url, username, password);
 
 app.listen(port, () => white(`Web UI started. Go to localhost:${port} to check status`));
@@ -60,7 +60,7 @@ function getIgnoredFilesList() {
     try {
         fs.readFileSync(target + "/.ignore", (error, data) => {
             if (error) red(error);
-            else ignoredFiles = data;
+            else ignoredFiles = data.slice("\n");
         })
     }
     catch (error) {
@@ -80,9 +80,14 @@ async function getFiles() {
     if (files.length < 2) return yellow(`No more job. Sleeping for ${timeout} seconds`);
 
     const local = fs.readdirSync(target) || [];
+    getIgnoredFilesList();
+    red("files to ignore:" + ignoredFiles);
     white(`Total images in remote folder: ${files.length - 1}`);
     files = files.filter(f => !local.includes(f.basename)).slice(1);
-    // Ignore file if already downloaded. Ignore 1st element — it's a folder
+    // Ignore file if it's already in the target. Ignore 1st element — it's a folder
+    if (ignoreDeleted) files = files.filter(f => !ignoredFiles.includes(f.basename));
+    // Ignore file that was manually deleted from the folder
+
     white(`New images in remote folder ${files.length}. Will copy to ${target}`);
 
     await files.forEach(file => {
@@ -90,7 +95,7 @@ async function getFiles() {
             .then(content => {
                 green(`Copying file ${file.basename}`);
                 fileCounter++;
-                fs.writeFileSync(target + file.basename, content, error => {
+                fs.writeFile(target + file.basename, content, error => {
                     if (error) {
                         white(error);
                     } else {
@@ -98,7 +103,8 @@ async function getFiles() {
                             client.deleteFile(file.filename);
                             red(`Deleting file ${file.basename}`);
                         }
-                        ignoredCache.push(file.basename);
+                        ignoredFiles.push(file.basename + "\n");
+                        fs.writeFileSync(target + "/ignore.list", ignoredFiles.join(""));
                     }
                 });
             })
