@@ -13,9 +13,12 @@ app.set('view engine', 'ejs');
 
 let config = {};
 let fileCounter = 0;
+let ignoredFiles = "";
+let ignoredCache = [];
 const startTime = new Date().toLocaleString();
 
 getConfigOptions();
+getIgnoredFilesList();
 
 const {url, username, password, timeout, folder, target, port, removeFromCloud} = config;
 const client = createClient(url, username, password);
@@ -53,6 +56,19 @@ function getConfigOptions() {
     }
 }
 
+function getIgnoredFilesList() {
+    try {
+        fs.readFileSync(target + "/.ignore", (error, data) => {
+            if (error) red(error);
+            else ignoredFiles = data;
+        })
+    }
+    catch (error) {
+        ignoredFiles = [];
+    }
+
+}
+
 async function getFiles() {
     let files = [];
     try {
@@ -69,12 +85,12 @@ async function getFiles() {
     // Ignore file if already downloaded. Ignore 1st element — it's a folder
     white(`New images in remote folder ${files.length}. Will copy to ${target}`);
 
-    files.forEach(file => {
+    await files.forEach(file => {
         client.getFileContents(file.filename)
             .then(content => {
                 green(`Copying file ${file.basename}`);
                 fileCounter++;
-                fs.writeFile(target + file.basename, content, error => {
+                fs.writeFileSync(target + file.basename, content, error => {
                     if (error) {
                         white(error);
                     } else {
@@ -82,6 +98,7 @@ async function getFiles() {
                             client.deleteFile(file.filename);
                             red(`Deleting file ${file.basename}`);
                         }
+                        ignoredCache.push(file.basename);
                     }
                 });
             })
