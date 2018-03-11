@@ -1,4 +1,5 @@
 folder: Фотокамера
+ignore: ignore.list
 ignoreDeleted: true
 password: mypassword
 port: 4000
