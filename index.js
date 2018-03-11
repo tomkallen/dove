@@ -42,7 +42,7 @@ async function getFiles() {
     if (files.length < 2) return yellow(`No more job. Sleeping for ${timeout} seconds`);
     const local = fs.readdirSync(target) || [];
     white(`Images in remote folder: ${files.length - 1}`);
-    await files
+    files
         .filter(f => !local.includes(f.basename)) // ignore file if already downloaded
         .forEach((file, index) => {
             if (!index) return; // skip folder at index 0
