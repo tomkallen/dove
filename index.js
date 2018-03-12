@@ -56,7 +56,7 @@ function getConfigOptions() {
 
 function getIgnoredFilesList() {
     try {
-        ignoredFiles = fs.readFileSync(target + `/${ignore}`).slice("\n");
+        ignoredFiles = fs.readFileSync(target + `/${ignore}`, 'utf-8').slice("\n");
     }
     catch (error) {
         ignoredFiles = [];
@@ -108,6 +108,7 @@ async function getFiles() {
                             client.deleteFile(file.filename);
                             red(`Deleting file ${file.basename}`);
                         }
+                        console.log(ignoredFiles);
                         ignoredFiles.push(file.basename);
                         fs.writeFileSync(target + `/${ignore}`, ignoredFiles.join("\n"));
                     }
