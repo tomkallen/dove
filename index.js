@@ -1,5 +1,3 @@
-const VERSION = "0.1.1";
-
 const createClient = require('webdav');
 const fs = require('fs');
 const yaml = require("js-yaml");
@@ -38,7 +36,7 @@ getFiles();
 app.get("/", (req, res) => res.render(path.join(__dirname, 'status.ejs'), {
     ...config,
     fileCounter,
-    startTime, VERSION
+    startTime
 }));
 
 setInterval(getFiles, timeout * 1000);
@@ -75,17 +73,25 @@ async function getFiles() {
         red("There's a problem accessing remote. Make sure your 'folder' option in config.yaml is correct");
         return
     }
-    if (files.length < 2) return yellow(`Nothing to do. Sleeping for ${timeout} seconds`);
+    if (files.length < 2) {
+        return yellow(`Nothing to do. Sleeping for ${timeout} seconds`);
+    }
 
     const local = fs.readdirSync(target) || [];
     getIgnoredFilesList();
     white(`Total images in remote folder: ${files.length - 1}`);
+
     files = files.filter(f => !local.includes(f.basename)).slice(1);
     // Ignore file if it's already in the target. Ignore 1st element — it's a folder
-    if (ignoreDeleted) files = files.filter(f => !ignoredFiles.includes(f.basename));
-    // Ignore file that was manually deleted from the folder
 
-    if (!files.length) return yellow(`Nothing to do. Sleeping for ${timeout} seconds`);
+    if (ignoreDeleted) {
+        files = files.filter(f => !ignoredFiles.includes(f.basename));
+        // Ignore file that was manually deleted from the folder
+    }
+
+    if (!files.length) {
+        return yellow(`Nothing to do. Sleeping for ${timeout} seconds`);
+    }
 
     white(`New images in remote folder ${files.length}. Will copy to ${target}`);
 
