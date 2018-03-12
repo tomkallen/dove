@@ -11,7 +11,7 @@ app.set('view engine', 'ejs');
 
 let config = {};
 let fileCounter = 0;
-let ignoredFiles = "";
+let ignoredFiles = [];
 
 const startTime = new Date().toLocaleString();
 
