@@ -16,10 +16,9 @@ let ignoredFiles = [];
 const startTime = new Date().toLocaleString();
 
 getConfigOptions();
-getIgnoredFilesList();
-
 const {url, username, password, timeout, folder, target, port, removeFromCloud, ignoreDeleted, ignore} = config;
 const client = createClient(url, username, password);
+getIgnoredFilesList();
 
 app.listen(port, () => white(`Web UI started. Go to localhost:${port} to check status`));
 
@@ -62,7 +61,6 @@ function getIgnoredFilesList() {
         ignoredFiles = [];
         red(error)
     }
-
 }
 
 async function getFiles() {
@@ -108,7 +106,6 @@ async function getFiles() {
                             client.deleteFile(file.filename);
                             red(`Deleting file ${file.basename}`);
                         }
-                        console.log(ignoredFiles);
                         ignoredFiles.push(file.basename);
                         fs.writeFileSync(target + `/${ignore}`, ignoredFiles.join("\n"));
                     }
