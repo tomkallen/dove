@@ -114,6 +114,7 @@ async function getFiles() {
                             console.log(error);
                             console.log("before crash the vale of ignoreFiles was: ");
                             console.log(ignoredFiles);
+                            console.log(Array.isArray(ignoredFiles))
                         }
                         fs.writeFileSync(target + `/${ignore}`, ignoredFiles.join("\n"));
                     }
