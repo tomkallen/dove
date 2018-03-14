@@ -56,6 +56,8 @@ function getConfigOptions() {
 function getIgnoredFilesList() {
     try {
         ignoredFiles = fs.readFileSync(target + `/${ignore}`, 'utf-8').slice("\n");
+        console.log("Read ignore list");
+        console.log(ignoredFiles);
     }
     catch (error) {
         ignoredFiles = [];
@@ -93,7 +95,7 @@ async function getFiles() {
 
     white(`New images in remote folder ${files.length}. Will copy to ${target}`);
 
-    await files.forEach(file => {
+    files.forEach(file => {
         client.getFileContents(file.filename)
             .then(content => {
                 green(`Copying file ${file.basename}`);
@@ -106,7 +108,13 @@ async function getFiles() {
                             client.deleteFile(file.filename);
                             red(`Deleting file ${file.basename}`);
                         }
-                        ignoredFiles.push(file.basename);
+                        try {
+                            ignoredFiles.push(file.basename);
+                        } catch(error){
+                            console.log(error);
+                            console.log("before crash the vale of ignoreFiles was: ");
+                            console.log(ignoredFiles);
+                        }
                         fs.writeFileSync(target + `/${ignore}`, ignoredFiles.join("\n"));
                     }
                 });
