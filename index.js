@@ -55,7 +55,7 @@ function getConfigOptions() {
 
 function getIgnoredFilesList() {
     try {
-        ignoredFiles = fs.readFileSync(target + `/${ignore}`, 'utf-8').slice("\n");
+        ignoredFiles = fs.readFileSync(target + `/${ignore}`, 'utf-8').split("\n");
         console.log("Read ignore list");
         console.log(ignoredFiles);
     }
